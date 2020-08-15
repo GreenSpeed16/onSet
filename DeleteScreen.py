@@ -1,16 +1,31 @@
 from tkinter import *
+import tkinter.messagebox
 import openpyxl
 
-root = Tk()
+del_root = Tk()
 delete_list = {}
 def deleteRoute():
     global delete_list
     def confirmDelete():
         global delete_list
+        deleted = 0
         for key, value in delete_list.items():
             if value:
-                boulder_sheet.delete_rows(key)
-                delete_list = {key + 1: value}
+                deleted += 1
+
+        # Confirm deletion
+        confirm_answer = tkinter.messagebox.askquestion('Confirm Deletion', 'Your are about to delete {} '
+                                                                                   'Routes. Continue?'.format(deleted))
+
+        if confirm_answer == 'yes':
+            for key2, value2 in delete_list.items():
+                if value:
+                    boulder_sheet.delete_rows(key2)
+                    delete_list = {key2 + 1: value2}
+            tkinter.messagebox.showinfo('', 'Deleted {} routes successfully.'.format(deleted))
+            delete_window.destroy()
+        else:
+            tkinter.messagebox.showinfo('Successful Cancel', 'Canceled route deletion.')
         route_book.save('Routes.xlsx')
 
     # Change buttons to represent excluded routes
@@ -21,7 +36,6 @@ def deleteRoute():
         else:
             delete_list[row] = True
             button_list[num-1].configure(fg='red')
-        print(delete_list)
 
     route_book = openpyxl.load_workbook('Routes.xlsx')
     boulder_sheet = route_book['Boulders']
@@ -41,7 +55,7 @@ def deleteRoute():
         setter = boulder_sheet.cell(row=cell, column=3).value
         color = boulder_sheet.cell(row=cell, column=4).value
 
-        if setter == setterDrop.get():
+        if wall == wallDrop.get():
             num_buttons += 1
             button_list.append(Button(delete_window, fg='red', text='{}, {}, {}, {}'.format(color, grade, wall, setter),
                                      command=lambda x=num_buttons, y = cell: btnPress(x, y)))
@@ -64,17 +78,16 @@ setterDrop.set(setter_options[0])
 colorDrop = StringVar()
 colorDrop.set(color_options[0])
 
+wallDelMenu = OptionMenu(del_root, wallDrop, *wall_options)
+wallDelMenu.grid(row=0, column=1)
 
-wallMenu = OptionMenu(root, wallDrop, *wall_options)
-wallMenu.grid(row=0, column=1)
+setterDelMenu = OptionMenu(del_root, setterDrop, *setter_options)
+setterDelMenu.grid(row=0, column=2)
 
-setterMenu = OptionMenu(root, setterDrop, *setter_options)
-setterMenu.grid(row=0, column=2)
+colorDelMenu = OptionMenu(del_root, colorDrop, *color_options)
+colorDelMenu.grid(row=0, column=3)
 
-colorMenu = OptionMenu(root, colorDrop, *color_options)
-colorMenu.grid(row=0, column=3)
-
-submitButton = Button(root, text='Search For Routes', command=deleteRoute)
+submitButton = Button(del_root, text='Search For Routes', command=deleteRoute)
 submitButton.grid(row=1, column=1, columnspan=2)
 
-root.mainloop()
+del_root.mainloop()
