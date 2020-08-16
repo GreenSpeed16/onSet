@@ -6,7 +6,7 @@ import openpyxl
 import numpy as np
 
 # Define functions
-delete_list = {}
+
 
 # Submit route
 def submitRoute():
@@ -302,6 +302,7 @@ grade_options = ['Grade:', 'V0', 'V1', 'V2', 'V3', 'V4', 'V5', 'V6', 'V7', 'V8',
 wall_options = ['Wall:']
 setter_options = ['Setter:']
 color_options = ['Color:']
+delete_list = {}
 
 route_book = openpyxl.load_workbook('Routes.xlsx')
 data_sheet = route_book['Data']
