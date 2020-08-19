@@ -7,10 +7,10 @@ import numpy as np
 
 # Define functions
 # Submit route
-def submitRoute():
+def submitRoute(sheet):
     # Load workbook
     route_book = openpyxl.load_workbook('Routes.xlsx')
-    boulder_sheet = route_book['Boulders']
+    boulder_sheet = route_book[sheet]
 
     # If all values have been selected, update spreadsheet
     if gradeDrop.get() != 'Grade:' and wallDrop.get() != 'Wall:'\
@@ -37,7 +37,7 @@ def deleteWindow():
     global wall_options
     del_wall_options = wall_options
 
-    def deleteRoute():
+    def deleteRoute(event):
         global delete_list
 
         def confirmDelete():
@@ -106,13 +106,16 @@ def deleteWindow():
     wallDelMenu = OptionMenu(del_root, delWallDrop, *del_wall_options)
     wallDelMenu.grid(row=0, column=1, columnspan=2)
 
-    delSubmitButton = Button(del_root, text='Search For Routes', command=deleteRoute)
+    delSubmitButton = Button(del_root, text='Search For Routes')
+    delSubmitButton.bind('<Button-1>', deleteRoute)
     delSubmitButton.grid(row=1, column=1, columnspan=2)
+
+    del_root.bind('<Return>', deleteRoute)
 
 # Goal Graph
 def setGoal():
 
-    def setGraph():
+    def setGraph(event):
         # Update spreadsheet
         data_sheet.cell(row=2, column=1).value = int(entry_v0.get())
         data_sheet.cell(row=3, column=1).value = int(entry_v1.get())
@@ -235,8 +238,11 @@ def setGoal():
     entry_13 = Entry(g_graph_root)
     entry_13.grid(row=8, column=3)
 
-    get_graph = Button(g_graph_root, text='Set Graphs', command=setGraph)
+    get_graph = Button(g_graph_root, text='Set Graphs')
+    get_graph.bind('<Button-1>', setGraph)
     get_graph.grid(row=11, column=1, columnspan=2, padx=50)
+
+    g_graph_root.bind('<Return>', setGraph)
 
 # Show current and goal graph
 def graphRoutes():
@@ -275,13 +281,20 @@ def graphRoutes():
 
 # Fill data sheet
 def fillData():
-    def submitData():
-        # Convert strings to lists
-        setter_list = setter_entry.get().split(', ')
-        color_list = color_entry.get().split(', ')
-        wall_list = wall_entry.get().split(', ')
-        rwall_list = rwall_entry.get().split(', ')
+    def stripSpaces(entry):
+        list = entry.split(', ')
+        for item in list:
+            item.replace(' ', '')
 
+        return list
+
+    def overwriteData():
+        setter_list = stripSpaces(setter_entry.get())
+        color_list = stripSpaces(color_entry.get())
+        wall_list = stripSpaces(wall_entry.get())
+        rwall_list = stripSpaces(rwall_entry.get())
+
+        print(setter_list)
         # Fill spreadsheet
         # Setters
         for s in range(len(setter_list)):
@@ -298,6 +311,41 @@ def fillData():
         # Rope Walls
         for r in range(len(rwall_list)):
             data_sheet.cell(row=r+2, column=6).value = rwall_list[r]
+
+        route_book.save('Routes.xlsx')
+        updateOptions()
+        data_root.destroy()
+
+    def submitData():
+        setter_list = stripSpaces(setter_entry.get())
+        color_list = stripSpaces(color_entry.get())
+        wall_list = stripSpaces(wall_entry.get())
+        rwall_list = stripSpaces(rwall_entry.get())
+
+        setter_column = data_sheet['C']
+        color_column = data_sheet['D']
+        wall_column = data_sheet['E']
+        rwall_column = data_sheet['F']
+
+        list_item = 0
+        for cell in range(len(setter_column) + 1, len(setter_column) + 1 + len(setter_list)):
+            data_sheet.cell(row=cell, column=3).value = setter_list[list_item]
+            list_item += 1
+
+        list_item = 0
+        for cell in range(len(color_column) + 1, len(color_column) + 1 + len(color_list)):
+            data_sheet.cell(row=cell, column=4).value = color_list[list_item]
+            list_item += 1
+
+        list_item = 0
+        for cell in range(len(wall_column) + 1, len(wall_column) + 1 + len(wall_list)):
+            data_sheet.cell(row=cell, column=5).value = wall_list[list_item]
+            list_item += 1
+
+        list_item = 0
+        for cell in range(len(rwall_column) + 1, len(rwall_column) + 1 + len(rwall_list)):
+            data_sheet.cell(row=cell, column=6).value = rwall_list[list_item]
+            list_item += 1
 
         route_book.save('Routes.xlsx')
         updateOptions()
@@ -377,6 +425,9 @@ def fillData():
     data_submit = Button(data_root, text='Submit', command=submitData)
     data_submit.grid(row=5, column=0, columnspan=2, sticky=NSEW, pady=5, padx=150)
 
+    data_overwrite = Button(data_root, text='Overwrite', command=overwriteData)
+    data_overwrite.grid(row=6, column=0, columnspan=2, sticky=NSEW, pady=5, padx=150)
+
     data_root.grid_columnconfigure(0, weight=1)
     data_root.grid_columnconfigure(1, weight=1)
     data_root.grid_columnconfigure(2, weight=1)
@@ -412,7 +463,7 @@ setterDrop.set(setter_options[0])
 colorDrop = StringVar()
 colorDrop.set(color_options[0])
 
-submitButton = Button(root, text='Submit Route', command=submitRoute)
+submitButton = Button(root, text='Submit Route', command=lambda x='Boulders': submitRoute(x))
 submitButton.grid(row=2, column=1, sticky=NSEW)
 
 deleteButton = Button(root, text='Delete Routes', command=deleteWindow)
@@ -443,17 +494,16 @@ for num in range(0, 6):
     root.grid_columnconfigure(num, weight=1)
     root.grid_rowconfigure(num, weight=1)
 
-# Attempt to open spreadsheet
-try:
-    route_book = openpyxl.load_workbook('Routes.xlsx')
-    data_sheet = route_book['Data']
-except FileNotFoundError:
-    warning_label = Label(root, text='No spreadsheet detected, please open settings.', fg='red')
-    warning_label.grid(row=0, column=0, columnspan=4)
-
 def updateOptions():
+    # Open workbook
     route_book = openpyxl.load_workbook('Routes.xlsx')
     data_sheet = route_book['Data']
+
+    # Reset option lists
+    grade_options = ['Grade:', 'V0', 'V1', 'V2', 'V3', 'V4', 'V5', 'V6', 'V7', 'V8', 'V9']
+    wall_options = ['Wall:']
+    setter_options = ['Setter:']
+    color_options = ['Color:']
 
     for cell in range(2, data_sheet.max_row + 1):
         # Make variable out of cells
@@ -480,5 +530,14 @@ def updateOptions():
 
     colorMenu = OptionMenu(root, colorDrop, *color_options)
     colorMenu.grid(row=1, column=3, sticky=NSEW)
+
+# Attempt to open spreadsheet
+try:
+    route_book = openpyxl.load_workbook('Routes.xlsx')
+    data_sheet = route_book['Data']
+    updateOptions()
+except FileNotFoundError:
+    warning_label = Label(root, text='No spreadsheet detected, please open settings.', fg='red')
+    warning_label.grid(row=0, column=0, columnspan=4)
 
 root.mainloop()
