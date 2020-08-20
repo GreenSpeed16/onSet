@@ -1,6 +1,7 @@
 # Imports
 from tkinter import *
 import tkinter.messagebox
+from tkinter import ttk
 import matplotlib.pyplot as plt
 import openpyxl
 import numpy as np
@@ -12,11 +13,19 @@ def submitRoute(sheet):
     route_book = openpyxl.load_workbook('Routes.xlsx')
     boulder_sheet = route_book[sheet]
 
+    grade_option = gradeDrop.get()
+    wall_option = wallDrop.get()
+
+    # Detect if a route or boulder is being entered
+    if sheet == 'Ropes':
+        wall_option = rwallDrop.get()
+        grade_option = rGradeDrop.get()
+
     # If all values have been selected, update spreadsheet
-    if gradeDrop.get() != 'Grade:' and wallDrop.get() != 'Wall:'\
+    if grade_option != 'Grade:' and wall_option != 'Wall:'\
             and setterDrop.get() != 'Setter:' and colorDrop.get() != 'Color:':
-        boulder_sheet.cell(column=1, row=boulder_sheet.max_row + 1).value = gradeDrop.get()
-        boulder_sheet.cell(column=2, row=boulder_sheet.max_row).value = wallDrop.get()
+        boulder_sheet.cell(column=1, row=boulder_sheet.max_row + 1).value = grade_option
+        boulder_sheet.cell(column=2, row=boulder_sheet.max_row).value = wall_option
         boulder_sheet.cell(column=3, row=boulder_sheet.max_row).value = setterDrop.get()
         boulder_sheet.cell(column=4, row=boulder_sheet.max_row).value = colorDrop.get()
         tkinter.messagebox.showinfo(title='Route Added', message='Your route has been successfully added.')
@@ -31,11 +40,11 @@ def submitRoute(sheet):
     route_book.save('Routes.xlsx')
 
 # Delete window
-def deleteWindow():
+def deleteWindow(sheet):
     del_root = tkinter.Toplevel(root)
 
     global wall_options
-    del_wall_options = wall_options
+    global rwall_options
 
     def deleteRoute(event):
         global delete_list
@@ -57,10 +66,14 @@ def deleteWindow():
                         boulder_sheet.delete_rows(key2)
                         delete_list = {key2 + 1: value2}
                 tkinter.messagebox.showinfo('', 'Deleted {} routes successfully.'.format(deleted))
-                delete_window.destroy()
+
             else:
                 tkinter.messagebox.showinfo('Successful Cancel', 'Canceled route deletion.')
             route_book.save('Routes.xlsx')
+
+            del_root.destroy()
+            delete_window.destroy()
+            delete_list = {}
 
         # Change buttons to represent excluded routes
         def btnPress(num, row):
@@ -72,7 +85,7 @@ def deleteWindow():
                 button_list[num - 1].configure(fg='red')
 
         route_book = openpyxl.load_workbook('Routes.xlsx')
-        boulder_sheet = route_book['Boulders']
+        boulder_sheet = route_book[sheet]
 
         delete_window = tkinter.Toplevel(root)
 
@@ -80,7 +93,8 @@ def deleteWindow():
 
         num_buttons = 0
 
-        info_label = Label(delete_window, text='Pressing confirm will delete all routes highlighted red')
+        info_label = Label(delete_window, text='Pressing confirm will delete all routes highlighted red'
+                                               '\n click a route to deselect it')
         info_label.grid(row=0, column=1)
 
         for cell in range(1, boulder_sheet.max_row + 1):
@@ -99,6 +113,12 @@ def deleteWindow():
 
         del_confirm_button = Button(delete_window, text='Confirm Deletion', command=confirmDelete)
         del_confirm_button.grid(row=num_buttons + 1, column=1)
+
+
+    if sheet == 'Ropes':
+        del_wall_options = rwall_options
+    else:
+        del_wall_options = wall_options
 
     delWallDrop = StringVar()
     delWallDrop.set(del_wall_options[0])
@@ -199,44 +219,44 @@ def setGoal():
 
     # Creates a window with entry boxes for every grade type
     label_6 = Label(g_graph_root, text='5.6s')
-    label_6.grid(row=1, column=2)
+    label_6.grid(row=2, column=2)
     entry_6 = Entry(g_graph_root)
-    entry_6.grid(row=1, column=3)
+    entry_6.grid(row=2, column=3)
 
     label_7 = Label(g_graph_root, text='5.7s')
-    label_7.grid(row=2, column=2)
+    label_7.grid(row=3, column=2)
     entry_7 = Entry(g_graph_root)
-    entry_7.grid(row=2, column=3)
+    entry_7.grid(row=3, column=3)
 
     label_8 = Label(g_graph_root, text='5.8s')
-    label_8.grid(row=3, column=2)
+    label_8.grid(row=4, column=2)
     entry_8 = Entry(g_graph_root)
-    entry_8.grid(row=3, column=3)
+    entry_8.grid(row=4, column=3)
 
     label_9 = Label(g_graph_root, text='5.9s')
-    label_9.grid(row=4, column=2)
+    label_9.grid(row=5, column=2)
     entry_9 = Entry(g_graph_root)
-    entry_9.grid(row=4, column=3)
+    entry_9.grid(row=5, column=3)
 
     label_10 = Label(g_graph_root, text='5.10s')
-    label_10.grid(row=5, column=2)
+    label_10.grid(row=6, column=2)
     entry_10 = Entry(g_graph_root)
-    entry_10.grid(row=5, column=3)
+    entry_10.grid(row=6, column=3)
 
     label_11 = Label(g_graph_root, text='5.11s')
-    label_11.grid(row=6, column=2)
+    label_11.grid(row=7, column=2)
     entry_11 = Entry(g_graph_root)
-    entry_11.grid(row=6, column=3)
+    entry_11.grid(row=7, column=3)
 
     label_12 = Label(g_graph_root, text='5.12s')
-    label_12.grid(row=7, column=2)
+    label_12.grid(row=8, column=2)
     entry_12 = Entry(g_graph_root)
-    entry_12.grid(row=7, column=3)
+    entry_12.grid(row=8, column=3)
 
     label_13 = Label(g_graph_root, text='5.13s')
-    label_13.grid(row=8, column=2)
+    label_13.grid(row=9, column=2)
     entry_13 = Entry(g_graph_root)
-    entry_13.grid(row=8, column=3)
+    entry_13.grid(row=9, column=3)
 
     get_graph = Button(g_graph_root, text='Set Graphs')
     get_graph.bind('<Button-1>', setGraph)
@@ -245,30 +265,40 @@ def setGoal():
     g_graph_root.bind('<Return>', setGraph)
 
 # Show current and goal graph
-def graphRoutes():
+def graphRoutes(sheet):
     # Get data for current graph
     route_book = openpyxl.load_workbook('Routes.xlsx')
-    boulder_sheet = route_book['Boulders']
+    boulder_sheet = route_book[sheet]
 
-    grade_list = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-    x_axis = ['V0', 'V1', 'V2', 'V3', 'V4', 'V5', 'V6', 'V7', 'V8', 'V9']
+    if sheet == 'Boulders':
+        grade_list = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        x_axis = ['V0', 'V1', 'V2', 'V3', 'V4', 'V5', 'V6', 'V7', 'V8', 'V9']
+        replace = 'V'
+        grade_minus = 0
+        data_column = 1
+    else:
+        grade_list = [0, 0, 0, 0, 0, 0, 0, 0]
+        x_axis = ['5.6', '5.7', '5.8', '5.9', '5.10', '5.11', '5.12', '5.13']
+        replace = '5.'
+        grade_minus = 6
+        data_column = 2
     positions = np.arange(len(grade_list))
 
     for cell in range(2, boulder_sheet.max_row + 1):
-        temp_grade = boulder_sheet.cell(column=1, row=cell).value
-        grade_int = int(temp_grade.replace('V', ''))
+        temp_grade = boulder_sheet.cell(row=cell, column=1).value
+
+        grade_int = int(temp_grade.replace(replace, ''))
         # Fill the list with appropriate values
-        grade_list[grade_int] += 1
+        grade_list[grade_int - grade_minus] += 1
 
     # Get data for goal graph
     goal_list = []
     data_sheet = route_book['Data']
-    column = data_sheet['A']
     for cell in range(2, data_sheet.max_row + 1):
-        temp_g_grade = data_sheet.cell(row=cell, column=1).value
-        goal_list.append(temp_g_grade)
-
-    route_book.save('Routes.xlsx')
+        temp_g_grade = data_sheet.cell(row=cell, column=data_column).value
+        if temp_g_grade is not None:
+            goal_list.append(temp_g_grade)
+            route_book.save('Routes.xlsx')
 
     plt.bar(positions, grade_list, width=0.5, color='red')
     plt.bar(positions + 0.5, goal_list, width=0.5)
@@ -294,7 +324,6 @@ def fillData():
         wall_list = stripSpaces(wall_entry.get())
         rwall_list = stripSpaces(rwall_entry.get())
 
-        print(setter_list)
         # Fill spreadsheet
         # Setters
         for s in range(len(setter_list)):
@@ -428,24 +457,46 @@ def fillData():
     data_overwrite = Button(data_root, text='Overwrite', command=overwriteData)
     data_overwrite.grid(row=6, column=0, columnspan=2, sticky=NSEW, pady=5, padx=150)
 
-    data_root.grid_columnconfigure(0, weight=1)
-    data_root.grid_columnconfigure(1, weight=1)
-    data_root.grid_columnconfigure(2, weight=1)
-    data_root.grid_columnconfigure(3, weight=1)
+    for num in range(0, 7):
+        data_root.grid_columnconfigure(num, weight=1)
+        data_root.grid_rowconfigure(num, weight=1)
 
-    data_root.grid_rowconfigure(0, weight=1)
-    data_root.grid_rowconfigure(1, weight=1)
-    data_root.grid_rowconfigure(2, weight=1)
-    data_root.grid_rowconfigure(3, weight=1)
-    data_root.grid_rowconfigure(4, weight=1)
-    data_root.grid_rowconfigure(5, weight=1)
+def highlightSubmit(*args):
+    global wallDrop
+    global gradeDrop
+    global colorDrop
+    global setterDrop
+    global rwallDrop
+    global rGradeDrop
+
+    if wallDrop.get() != 'Wall:' and colorDrop.get() != 'Color:' and setterDrop.get() != 'Setter:'\
+        and gradeDrop.get() != 'Grade:':
+        submitButton.configure(state=ACTIVE)
+
+    if rwallDrop.get() != 'Wall:' and colorDrop.get() != 'Color:' and setterDrop.get() != 'Setter:'\
+        and rGradeDrop.get() != 'Grade:':
+        rSubmitButton.configure(state=ACTIVE)
 
 # Initialize tkinter module
 root = Tk()
 root.title('onSet')
+tabControl = ttk.Notebook(root)
+
+boulderTab = ttk.Frame(tabControl)
+tabControl.add(boulderTab, text='Boulders')
+
+ropeTab = ttk.Frame(tabControl)
+tabControl.add(ropeTab, text='Ropes')
+
+settingTab = ttk.Frame(tabControl)
+tabControl.add(settingTab, text='Settings')
+
+tabControl.pack(expand=1, fill='both')
 
 # Define route variables and initial values
+rope_grade_options = ['Grade:', '5.6', '5.7', '5.8', '5.9', '5.10', '5.11', '5.12', '5.13']
 grade_options = ['Grade:', 'V0', 'V1', 'V2', 'V3', 'V4', 'V5', 'V6', 'V7', 'V8', 'V9']
+rwall_options = ['Wall:']
 wall_options = ['Wall:']
 setter_options = ['Setter:']
 color_options = ['Color:']
@@ -453,6 +504,12 @@ delete_list = {}
 
 gradeDrop = StringVar()
 gradeDrop.set(grade_options[0])
+
+rGradeDrop = StringVar()
+rGradeDrop.set(rope_grade_options[0])
+
+rwallDrop = StringVar()
+rwallDrop.set(rwall_options[0])
 
 wallDrop = StringVar()
 wallDrop.set(wall_options[0])
@@ -463,53 +520,96 @@ setterDrop.set(setter_options[0])
 colorDrop = StringVar()
 colorDrop.set(color_options[0])
 
-submitButton = Button(root, text='Submit Route', command=lambda x='Boulders': submitRoute(x))
+gradeDrop.trace('w', highlightSubmit)
+rGradeDrop.trace('w', highlightSubmit)
+rwallDrop.trace('w', highlightSubmit)
+wallDrop.trace('w', highlightSubmit)
+setterDrop.trace('w', highlightSubmit)
+colorDrop.trace('w', highlightSubmit)
+
+# Boulder tab
+submitButton = Button(boulderTab, text='Submit Route', command=lambda x='Boulders': submitRoute(x), state=DISABLED)
 submitButton.grid(row=2, column=1, sticky=NSEW)
 
-deleteButton = Button(root, text='Delete Routes', command=deleteWindow)
+deleteButton = Button(boulderTab, text='Delete Routes', command=lambda x='Boulders': deleteWindow(x))
 deleteButton.grid(row=2, column=2, sticky=NSEW)
 
-goalButton = Button(root, text='Set Ideal Route Curve', command=setGoal)
-goalButton.grid(row=4, column=1, columnspan=2, sticky=NSEW)
+graphButton = Button(boulderTab, text='Route Graphs', command=lambda x='Boulders': graphRoutes(x))
+graphButton.grid(row=3, column=1, columnspan=2, sticky=NSEW)
 
-graphButton = Button(root, text='Route Graphs', command=graphRoutes)
-graphButton.grid(row=5, column=1, columnspan=2, sticky=NSEW)
-
-gradeMenu = OptionMenu(root, gradeDrop, *grade_options)
+gradeMenu = OptionMenu(boulderTab, gradeDrop, *grade_options)
 gradeMenu.grid(row=1, column=0, sticky=NSEW)
 
-wallMenu = OptionMenu(root, wallDrop, *wall_options)
+wallMenu = OptionMenu(boulderTab, wallDrop, *wall_options)
 wallMenu.grid(row=1, column=1, sticky=NSEW)
 
-setterMenu = OptionMenu(root, setterDrop, *setter_options)
+setterMenu = OptionMenu(boulderTab, setterDrop, *setter_options)
 setterMenu.grid(row=1, column=2, sticky=NSEW)
 
-colorMenu = OptionMenu(root, colorDrop, *color_options)
+colorMenu = OptionMenu(boulderTab, colorDrop, *color_options)
 colorMenu.grid(row=1, column=3, sticky=NSEW)
 
-settings = Button(root, text='Settings', command=fillData)
-settings.grid(row=5, column=0, sticky=NSEW)
+# Rope tab
+rSubmitButton = Button(ropeTab, text='Submit Route', command=lambda x='Ropes': submitRoute(x), state=DISABLED)
+rSubmitButton.grid(row=2, column=1, sticky=NSEW)
+
+rDeleteButton = Button(ropeTab, text='Delete Routes', command=lambda x='Ropes': deleteWindow(x))
+rDeleteButton.grid(row=2, column=2, sticky=NSEW)
+
+rGraphButton = Button(ropeTab, text='Route Graphs', command=lambda x='Ropes': graphRoutes(x))
+rGraphButton.grid(row=3, column=1, columnspan=2, sticky=NSEW)
+
+rope_grade_menu = OptionMenu(ropeTab, rGradeDrop, *rope_grade_options)
+gradeMenu.grid(row=1, column=0, sticky=NSEW)
+
+rope_wall_menu = OptionMenu(ropeTab, wallDrop, *rwall_options)
+wallMenu.grid(row=1, column=1, sticky=NSEW)
+
+rope_setter_menu = OptionMenu(ropeTab, setterDrop, *setter_options)
+rope_setter_menu.grid(row=1, column=2, sticky=NSEW)
+
+colorMenu = OptionMenu(ropeTab, colorDrop, *color_options)
+colorMenu.grid(row=1, column=3, sticky=NSEW)
+
+# Settings tab
+dataButton = Button(settingTab, text='Choose Presets', command=fillData)
+dataButton.grid(row=1, column=1, columnspan=2, sticky=NSEW)
+
+goalButton = Button(settingTab, text='Set Ideal Route Curve', command=setGoal)
+goalButton.grid(row=2, column=1, columnspan=2, sticky=NSEW)
 
 for num in range(0, 6):
-    root.grid_columnconfigure(num, weight=1)
-    root.grid_rowconfigure(num, weight=1)
+    boulderTab.grid_columnconfigure(num, weight=1)
+    boulderTab.grid_rowconfigure(num, weight=1)
+
+    ropeTab.grid_columnconfigure(num, weight=1)
+    ropeTab.grid_rowconfigure(num, weight=1)
+
+    settingTab.grid_columnconfigure(num, weight=1)
+    settingTab.grid_rowconfigure(num, weight=1)
 
 def updateOptions():
+    global wall_options
+    global setter_options
+    global color_options
+    global rwall_options
+
     # Open workbook
     route_book = openpyxl.load_workbook('Routes.xlsx')
     data_sheet = route_book['Data']
 
     # Reset option lists
-    grade_options = ['Grade:', 'V0', 'V1', 'V2', 'V3', 'V4', 'V5', 'V6', 'V7', 'V8', 'V9']
     wall_options = ['Wall:']
     setter_options = ['Setter:']
     color_options = ['Color:']
+    rwall_options = ['Wall:']
 
     for cell in range(2, data_sheet.max_row + 1):
         # Make variable out of cells
         setter_cell = data_sheet.cell(row=cell, column=3).value
         color_cell = data_sheet.cell(row=cell, column=4).value
         wall_cell = data_sheet.cell(row=cell, column=5).value
+        rwall_cell = data_sheet.cell(row=cell, column=6).value
 
         # Iterate over variables, appending to appropriate lists
         if setter_cell is not None:
@@ -518,18 +618,34 @@ def updateOptions():
             color_options.append(color_cell)
         if wall_cell is not None:
             wall_options.append(wall_cell)
+        if rwall_cell is not None:
+            rwall_options.append(rwall_cell)
 
-    gradeMenu = OptionMenu(root, gradeDrop, *grade_options)
+    # Place dropdowns in boulder menu
+    gradeMenu = OptionMenu(boulderTab, gradeDrop, *grade_options)
     gradeMenu.grid(row=1, column=0, sticky=NSEW)
 
-    wallMenu = OptionMenu(root, wallDrop, *wall_options)
+    wallMenu = OptionMenu(boulderTab, wallDrop, *wall_options)
     wallMenu.grid(row=1, column=1, sticky=NSEW)
 
-    setterMenu = OptionMenu(root, setterDrop, *setter_options)
+    setterMenu = OptionMenu(boulderTab, setterDrop, *setter_options)
     setterMenu.grid(row=1, column=2, sticky=NSEW)
 
-    colorMenu = OptionMenu(root, colorDrop, *color_options)
+    colorMenu = OptionMenu(boulderTab, colorDrop, *color_options)
     colorMenu.grid(row=1, column=3, sticky=NSEW)
+
+    # Place dropdowns in rope menu
+    rope_grade_menu = OptionMenu(ropeTab, rGradeDrop, *rope_grade_options)
+    rope_grade_menu.grid(row=1, column=0, sticky=NSEW)
+
+    rope_wall_menu = OptionMenu(ropeTab, rwallDrop, *rwall_options)
+    rope_wall_menu.grid(row=1, column=1, sticky=NSEW)
+
+    rope_setter_menu = OptionMenu(ropeTab, setterDrop, *setter_options)
+    rope_setter_menu.grid(row=1, column=2, sticky=NSEW)
+
+    rope_color_menu = OptionMenu(ropeTab, colorDrop, *color_options)
+    rope_color_menu.grid(row=1, column=3, sticky=NSEW)
 
 # Attempt to open spreadsheet
 try:
@@ -537,7 +653,7 @@ try:
     data_sheet = route_book['Data']
     updateOptions()
 except FileNotFoundError:
-    warning_label = Label(root, text='No spreadsheet detected, please open settings.', fg='red')
+    warning_label = Label(boulderTab, text='No spreadsheet detected, please open settings.', fg='red')
     warning_label.grid(row=0, column=0, columnspan=4)
 
 root.mainloop()
