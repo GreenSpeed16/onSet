@@ -326,6 +326,21 @@ def graphRoutes(sheet):
 
 # Fill data sheet
 def fillData():
+    def fillSet(col):
+        entry = []
+        for cell in range(2, data_sheet.max_row + 1):
+            cell_data = data_sheet.cell(row=cell, column=col).value
+
+            if cell_data is not None:
+                entry.append(cell_data)
+
+        return entry
+
+    def fillSheet(entry, col):
+        # Setter
+        for cell in range(len(entry)):
+            data_sheet.cell(row=cell+2, column=col).value = entry[cell]
+
     def stripSpaces(entry):
         list = entry.split(', ')
         for item in list:
@@ -361,47 +376,63 @@ def fillData():
         data_root.destroy()
 
     def submitData():
+        # Create sets out of current options
+        setter_set = set(fillSet(3))
+        color_set = set(fillSet(4))
+        wall_set = set(fillSet(5))
+        rwall_set = set(fillSet(6))
+
+        # Fill sets
+        # Setter
+        # for cell in range(2, data_sheet.max_row + 1):
+        #     cell_data = data_sheet.cell(row=cell, column=3).value
+        #
+        #     if cell_data is not None:
+        #         setter_set.add(cell_data)
+        #
+        # # Color
+        # for cell in range(2, data_sheet.max_row + 1):
+        #     cell_data = data_sheet.cell(row=cell, column=4).value
+        #
+        #     if cell_data is not None:
+        #         color_set.add(cell_data)
+        #
+        # # Wall
+        # for cell in range(2, data_sheet.max_row + 1):
+        #     cell_data = data_sheet.cell(row=cell, column=5).value
+        #
+        #     if cell_data is not None:
+        #         wall_set.add(cell_data)
+        #
+        # # Rope wall
+        # for cell in range(2, data_sheet.max_row + 1):
+        #     cell_data = data_sheet.cell(row=cell, column=3).value
+        #
+        #     if cell_data is not None:
+        #         rwall_set.add(cell_data)
+
         setter_list = stripSpaces(setter_entry.get())
+        setter_set.update(setter_list)
+
         color_list = stripSpaces(color_entry.get())
+        color_set.update(color_list)
+
         wall_list = stripSpaces(wall_entry.get())
+        wall_set.update(wall_list)
+
         rwall_list = stripSpaces(rwall_entry.get())
+        rwall_set.update(rwall_list)
 
-        setter_column = data_sheet['C']
-        color_column = data_sheet['D']
-        wall_column = data_sheet['E']
-        rwall_column = data_sheet['F']
+        setter_list = list(setter_set)
+        color_list = list(color_set)
+        wall_list = list(wall_set)
+        rwall_list = list(rwall_set)
 
-        for cell in range(2, len(setter_column) + len(setter_list)):
-            cell_data = data_sheet.cell(row=cell, column=3).value
-
-            if len(setter_list) > 0:
-                if cell_data is None:
-                    data_sheet.cell(row=cell, column=3).value = setter_list[0]
-                    del setter_list[0]
-
-        for cell in range(2, len(color_column) + len(color_list)):
-            cell_data = data_sheet.cell(row=cell, column=4).value
-
-            if len(color_list) > 0:
-                if cell_data is None:
-                    data_sheet.cell(row=cell, column=4).value = color_list[0]
-                    del color_list[0]
-
-        for cell in range(2, len(wall_column) + len(wall_list)):
-            cell_data = data_sheet.cell(row=cell, column=5).value
-
-            if len(wall_list) > 0:
-                if cell_data is None:
-                    data_sheet.cell(row=cell, column=5).value = wall_list[0]
-                    del wall_list[0]
-
-        for cell in range(2, len(rwall_column) + len(rwall_list)):
-            cell_data = data_sheet.cell(row=cell, column=6).value
-
-            if len(rwall_list) > 0:
-                if cell_data is None:
-                    data_sheet.cell(row=cell, column=6).value = rwall_list[0]
-                    del rwall_list[0]
+        # Update spreadsheet
+        fillSheet(setter_list, 3)
+        fillSheet(color_list, 4)
+        fillSheet(wall_list, 5)
+        fillSheet(rwall_list, 6)
 
         route_book.save('Routes.xlsx')
         updateOptions()
