@@ -11,7 +11,7 @@ import numpy as np
 def submitRoute(sheet):
     # Load workbook
     route_book = openpyxl.load_workbook('Routes.xlsx')
-    boulder_sheet = route_book[sheet]
+    entry_sheet = route_book[sheet]
 
     grade_option = gradeDrop.get()
     wall_option = wallDrop.get()
@@ -24,10 +24,10 @@ def submitRoute(sheet):
         button = rSubmitButton
 
     # Update spreadsheet
-    boulder_sheet.cell(column=1, row=boulder_sheet.max_row + 1).value = grade_option
-    boulder_sheet.cell(column=2, row=boulder_sheet.max_row).value = wall_option
-    boulder_sheet.cell(column=3, row=boulder_sheet.max_row).value = setterDrop.get()
-    boulder_sheet.cell(column=4, row=boulder_sheet.max_row).value = colorDrop.get()
+    entry_sheet.cell(column=1, row=entry_sheet.max_row + 1).value = grade_option
+    entry_sheet.cell(column=2, row=entry_sheet.max_row).value = wall_option
+    entry_sheet.cell(column=3, row=entry_sheet.max_row).value = setterDrop.get()
+    entry_sheet.cell(column=4, row=entry_sheet.max_row).value = colorDrop.get()
     tkinter.messagebox.showinfo(title='Route Added', message='Your route has been successfully added.')
     gradeDrop.set(grade_options[0])
     wallDrop.set(wall_options[0])
@@ -65,7 +65,7 @@ def deleteWindow(sheet):
             if confirm_answer == 'yes':
                 for key2, value2 in delete_list.items():
                     if value2:
-                        boulder_sheet.delete_rows(key2)
+                        entry_sheet.delete_rows(key2)
                         delete_list = {key2 + 1: value2}
                 tkinter.messagebox.showinfo('', 'Deleted {} routes successfully.'.format(deleted))
 
@@ -87,7 +87,7 @@ def deleteWindow(sheet):
                 button_list[num - 1].configure(fg='red')
 
         route_book = openpyxl.load_workbook('Routes.xlsx')
-        boulder_sheet = route_book[sheet]
+        entry_sheet = route_book[sheet]
 
         delete_window = tkinter.Toplevel(root)
 
@@ -99,11 +99,11 @@ def deleteWindow(sheet):
                                                '\n click a route to deselect it')
         info_label.grid(row=0, column=1)
 
-        for cell in range(1, boulder_sheet.max_row + 1):
-            grade = boulder_sheet.cell(row=cell, column=1).value
-            wall = boulder_sheet.cell(row=cell, column=2).value
-            setter = boulder_sheet.cell(row=cell, column=3).value
-            color = boulder_sheet.cell(row=cell, column=4).value
+        for cell in range(1, entry_sheet.max_row + 1):
+            grade = entry_sheet.cell(row=cell, column=1).value
+            wall = entry_sheet.cell(row=cell, column=2).value
+            setter = entry_sheet.cell(row=cell, column=3).value
+            color = entry_sheet.cell(row=cell, column=4).value
 
             if wall == delWallDrop.get():
                 num_buttons += 1
@@ -279,7 +279,7 @@ def setGoal():
 def graphRoutes(sheet):
     # Get data for current graph
     route_book = openpyxl.load_workbook('Routes.xlsx')
-    boulder_sheet = route_book[sheet]
+    entry_sheet = route_book[sheet]
 
     if sheet == 'Boulders':
         grade_list = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
@@ -295,8 +295,8 @@ def graphRoutes(sheet):
         data_column = 2
     positions = np.arange(len(grade_list))
 
-    for cell in range(2, boulder_sheet.max_row + 1):
-        temp_grade = boulder_sheet.cell(row=cell, column=1).value
+    for cell in range(2, entry_sheet.max_row + 1):
+        temp_grade = entry_sheet.cell(row=cell, column=1).value
 
         grade_int = int(temp_grade.replace(replace, ''))
         # Fill the list with appropriate values
@@ -337,7 +337,6 @@ def fillData():
         return entry
 
     def fillSheet(entry, col):
-        # Setter
         for cell in range(len(entry)):
             data_sheet.cell(row=cell+2, column=col).value = entry[cell]
 
@@ -382,35 +381,6 @@ def fillData():
         wall_set = set(fillSet(5))
         rwall_set = set(fillSet(6))
 
-        # Fill sets
-        # Setter
-        # for cell in range(2, data_sheet.max_row + 1):
-        #     cell_data = data_sheet.cell(row=cell, column=3).value
-        #
-        #     if cell_data is not None:
-        #         setter_set.add(cell_data)
-        #
-        # # Color
-        # for cell in range(2, data_sheet.max_row + 1):
-        #     cell_data = data_sheet.cell(row=cell, column=4).value
-        #
-        #     if cell_data is not None:
-        #         color_set.add(cell_data)
-        #
-        # # Wall
-        # for cell in range(2, data_sheet.max_row + 1):
-        #     cell_data = data_sheet.cell(row=cell, column=5).value
-        #
-        #     if cell_data is not None:
-        #         wall_set.add(cell_data)
-        #
-        # # Rope wall
-        # for cell in range(2, data_sheet.max_row + 1):
-        #     cell_data = data_sheet.cell(row=cell, column=3).value
-        #
-        #     if cell_data is not None:
-        #         rwall_set.add(cell_data)
-
         setter_list = stripSpaces(setter_entry.get())
         setter_set.update(setter_list)
 
@@ -448,15 +418,15 @@ def fillData():
         route_book = openpyxl.Workbook()
 
         # Create boulder sheet
-        boulder_sheet = route_book.active
-        boulder_sheet.title = 'Boulders'
+        entry_sheet = route_book.active
+        entry_sheet.title = 'Boulders'
 
         # Set up first row
-        boulder_sheet['A1'] = 'Grade'
-        boulder_sheet['B1'] = 'Wall'
-        boulder_sheet['C1'] = 'Setter'
-        boulder_sheet['D1'] = 'Color'
-        boulder_sheet.freeze_panes = 'A2'
+        entry_sheet['A1'] = 'Grade'
+        entry_sheet['B1'] = 'Wall'
+        entry_sheet['C1'] = 'Setter'
+        entry_sheet['D1'] = 'Color'
+        entry_sheet.freeze_panes = 'A2'
 
         # Create route sheet
         route_book.create_sheet('Ropes')
