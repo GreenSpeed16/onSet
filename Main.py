@@ -15,26 +15,28 @@ def submitRoute(sheet):
 
     grade_option = gradeDrop.get()
     wall_option = wallDrop.get()
+    button = submitButton
 
     # Detect if a route or boulder is being entered
     if sheet == 'Ropes':
         wall_option = rwallDrop.get()
         grade_option = rGradeDrop.get()
+        button = rSubmitButton
 
-    # If all values have been selected, update spreadsheet
-    if grade_option != 'Grade:' and wall_option != 'Wall:'\
-            and setterDrop.get() != 'Setter:' and colorDrop.get() != 'Color:':
-        boulder_sheet.cell(column=1, row=boulder_sheet.max_row + 1).value = grade_option
-        boulder_sheet.cell(column=2, row=boulder_sheet.max_row).value = wall_option
-        boulder_sheet.cell(column=3, row=boulder_sheet.max_row).value = setterDrop.get()
-        boulder_sheet.cell(column=4, row=boulder_sheet.max_row).value = colorDrop.get()
-        tkinter.messagebox.showinfo(title='Route Added', message='Your route has been successfully added.')
-        gradeDrop.set(grade_options[0])
-        wallDrop.set(wall_options[0])
-        setterDrop.set(setter_options[0])
-        colorDrop.set(color_options[0])
-    else:
-        tkinter.messagebox.showerror(title=None, message='One or more options was not filled out, please try again')
+    # Update spreadsheet
+    boulder_sheet.cell(column=1, row=boulder_sheet.max_row + 1).value = grade_option
+    boulder_sheet.cell(column=2, row=boulder_sheet.max_row).value = wall_option
+    boulder_sheet.cell(column=3, row=boulder_sheet.max_row).value = setterDrop.get()
+    boulder_sheet.cell(column=4, row=boulder_sheet.max_row).value = colorDrop.get()
+    tkinter.messagebox.showinfo(title='Route Added', message='Your route has been successfully added.')
+    gradeDrop.set(grade_options[0])
+    wallDrop.set(wall_options[0])
+    rGradeDrop.set(grade_options[0])
+    rwallDrop.set(rwall_options[0])
+    setterDrop.set(setter_options[0])
+    colorDrop.set(color_options[0])
+
+    button.configure(state=DISABLED)
 
     # Save workbook
     route_book.save('Routes.xlsx')
@@ -134,33 +136,44 @@ def deleteWindow(sheet):
 
 # Goal Graph
 def setGoal():
-
     def setGraph(event):
-        # Update spreadsheet
-        data_sheet.cell(row=2, column=1).value = int(entry_v0.get())
-        data_sheet.cell(row=3, column=1).value = int(entry_v1.get())
-        data_sheet.cell(row=4, column=1).value = int(entry_v2.get())
-        data_sheet.cell(row=5, column=1).value = int(entry_v3.get())
-        data_sheet.cell(row=6, column=1).value = int(entry_v4.get())
-        data_sheet.cell(row=7, column=1).value = int(entry_v5.get())
-        data_sheet.cell(row=8, column=1).value = int(entry_v6.get())
-        data_sheet.cell(row=9, column=1).value = int(entry_v7.get())
-        data_sheet.cell(row=10, column=1).value = int(entry_v8.get())
-        data_sheet.cell(row=11, column=1).value = int(entry_v9.get())
+        if entry_v0.get() != '' and entry_v0.get() != '' and entry_v1.get() != '' \
+                and entry_v2.get() != '' and entry_v3.get() != '' and entry_v4.get() != '' \
+                and entry_v5.get() != '' and entry_v6.get() != '' and entry_v7.get() != '' \
+                and entry_v8.get() != '' and entry_v9.get() != '' and entry_6.get() != '' \
+                and entry_6.get() != '' and entry_7.get() != '' and entry_8.get() != '' \
+                and entry_9.get() != '' and entry_10.get() != '' and entry_11.get() != '' \
+                and entry_12.get() != '' and entry_13.get() != '':
+            # Update spreadsheet
+            data_sheet.cell(row=2, column=1).value = int(entry_v0.get())
+            data_sheet.cell(row=3, column=1).value = int(entry_v1.get())
+            data_sheet.cell(row=4, column=1).value = int(entry_v2.get())
+            data_sheet.cell(row=5, column=1).value = int(entry_v3.get())
+            data_sheet.cell(row=6, column=1).value = int(entry_v4.get())
+            data_sheet.cell(row=7, column=1).value = int(entry_v5.get())
+            data_sheet.cell(row=8, column=1).value = int(entry_v6.get())
+            data_sheet.cell(row=9, column=1).value = int(entry_v7.get())
+            data_sheet.cell(row=10, column=1).value = int(entry_v8.get())
+            data_sheet.cell(row=11, column=1).value = int(entry_v9.get())
 
-        # Ropes
-        data_sheet.cell(row=2, column=2).value = int(entry_6.get())
-        data_sheet.cell(row=3, column=2).value = int(entry_7.get())
-        data_sheet.cell(row=4, column=2).value = int(entry_8.get())
-        data_sheet.cell(row=5, column=2).value = int(entry_9.get())
-        data_sheet.cell(row=6, column=2).value = int(entry_10.get())
-        data_sheet.cell(row=7, column=2).value = int(entry_11.get())
-        data_sheet.cell(row=8, column=2).value = int(entry_12.get())
-        data_sheet.cell(row=9, column=2).value = int(entry_13.get())
+            # Ropes
+            data_sheet.cell(row=2, column=2).value = int(entry_6.get())
+            data_sheet.cell(row=3, column=2).value = int(entry_7.get())
+            data_sheet.cell(row=4, column=2).value = int(entry_8.get())
+            data_sheet.cell(row=5, column=2).value = int(entry_9.get())
+            data_sheet.cell(row=6, column=2).value = int(entry_10.get())
+            data_sheet.cell(row=7, column=2).value = int(entry_11.get())
+            data_sheet.cell(row=8, column=2).value = int(entry_12.get())
+            data_sheet.cell(row=9, column=2).value = int(entry_13.get())
 
-        g_graph_root.destroy()
-        route_book.save('Routes.xlsx')
+            g_graph_root.destroy()
+            route_book.save('Routes.xlsx')
 
+        else:
+            tkinter.messagebox.showerror(title=None, message='One or more options was not filled out, please try again')
+
+    route_book = openpyxl.load_workbook('Routes.xlsx')
+    data_sheet = route_book['Data']
     # Creates a window with entry boxes for every grade type
     g_graph_root = tkinter.Toplevel(root)
 
@@ -262,8 +275,6 @@ def setGoal():
     get_graph.bind('<Button-1>', setGraph)
     get_graph.grid(row=11, column=1, columnspan=2, padx=50)
 
-    g_graph_root.bind('<Return>', setGraph)
-
 # Show current and goal graph
 def graphRoutes(sheet):
     # Get data for current graph
@@ -300,14 +311,18 @@ def graphRoutes(sheet):
             goal_list.append(temp_g_grade)
             route_book.save('Routes.xlsx')
 
-    plt.bar(positions, grade_list, width=0.5, color='red')
-    plt.bar(positions + 0.5, goal_list, width=0.5)
-    plt.legend(['Current Spread', 'Goal Spread'])
-    plt.title('Route Comparison')
-    plt.xticks(positions + 0.25, x_axis)
-    plt.ylabel('Amount')
+    try:
+        plt.bar(positions, grade_list, width=0.5, color='red')
+        plt.bar(positions + 0.5, goal_list, width=0.5)
+        plt.legend(['Current Spread', 'Goal Spread'])
+        plt.title('Route Comparison')
+        plt.xticks(positions + 0.25, x_axis)
+        plt.ylabel('Amount')
 
-    plt.show()
+        plt.show()
+    except ValueError:
+        tkinter.messagebox.showerror('Missing Data', 'You have not submitted your ideal route curve. '
+                                                     'Please go to settings')
 
 # Fill data sheet
 def fillData():
@@ -356,25 +371,37 @@ def fillData():
         wall_column = data_sheet['E']
         rwall_column = data_sheet['F']
 
-        list_item = 0
-        for cell in range(len(setter_column) + 1, len(setter_column) + 1 + len(setter_list)):
-            data_sheet.cell(row=cell, column=3).value = setter_list[list_item]
-            list_item += 1
+        for cell in range(2, len(setter_column) + len(setter_list)):
+            cell_data = data_sheet.cell(row=cell, column=3).value
 
-        list_item = 0
-        for cell in range(len(color_column) + 1, len(color_column) + 1 + len(color_list)):
-            data_sheet.cell(row=cell, column=4).value = color_list[list_item]
-            list_item += 1
+            if len(setter_list) > 0:
+                if cell_data is None:
+                    data_sheet.cell(row=cell, column=3).value = setter_list[0]
+                    del setter_list[0]
 
-        list_item = 0
-        for cell in range(len(wall_column) + 1, len(wall_column) + 1 + len(wall_list)):
-            data_sheet.cell(row=cell, column=5).value = wall_list[list_item]
-            list_item += 1
+        for cell in range(2, len(color_column) + len(color_list)):
+            cell_data = data_sheet.cell(row=cell, column=4).value
 
-        list_item = 0
-        for cell in range(len(rwall_column) + 1, len(rwall_column) + 1 + len(rwall_list)):
-            data_sheet.cell(row=cell, column=6).value = rwall_list[list_item]
-            list_item += 1
+            if len(color_list) > 0:
+                if cell_data is None:
+                    data_sheet.cell(row=cell, column=4).value = color_list[0]
+                    del color_list[0]
+
+        for cell in range(2, len(wall_column) + len(wall_list)):
+            cell_data = data_sheet.cell(row=cell, column=5).value
+
+            if len(wall_list) > 0:
+                if cell_data is None:
+                    data_sheet.cell(row=cell, column=5).value = wall_list[0]
+                    del wall_list[0]
+
+        for cell in range(2, len(rwall_column) + len(rwall_list)):
+            cell_data = data_sheet.cell(row=cell, column=6).value
+
+            if len(rwall_list) > 0:
+                if cell_data is None:
+                    data_sheet.cell(row=cell, column=6).value = rwall_list[0]
+                    del rwall_list[0]
 
         route_book.save('Routes.xlsx')
         updateOptions()
@@ -385,6 +412,7 @@ def fillData():
         route_book = openpyxl.load_workbook('Routes.xlsx')
         data_sheet = route_book['Data']
     except:
+        warning_label.destroy()
         # Create new workbook
         route_book = openpyxl.Workbook()
 
@@ -520,6 +548,7 @@ setterDrop.set(setter_options[0])
 colorDrop = StringVar()
 colorDrop.set(color_options[0])
 
+# Track dropdown changes to enable submit button
 gradeDrop.trace('w', highlightSubmit)
 rGradeDrop.trace('w', highlightSubmit)
 rwallDrop.trace('w', highlightSubmit)
@@ -578,6 +607,7 @@ dataButton.grid(row=1, column=1, columnspan=2, sticky=NSEW)
 goalButton = Button(settingTab, text='Set Ideal Route Curve', command=setGoal)
 goalButton.grid(row=2, column=1, columnspan=2, sticky=NSEW)
 
+# Calibrate grid
 for num in range(0, 6):
     boulderTab.grid_columnconfigure(num, weight=1)
     boulderTab.grid_rowconfigure(num, weight=1)
@@ -589,6 +619,7 @@ for num in range(0, 6):
     settingTab.grid_rowconfigure(num, weight=1)
 
 def updateOptions():
+    global warning_label
     global wall_options
     global setter_options
     global color_options
@@ -646,6 +677,8 @@ def updateOptions():
 
     rope_color_menu = OptionMenu(ropeTab, colorDrop, *color_options)
     rope_color_menu.grid(row=1, column=3, sticky=NSEW)
+
+
 
 # Attempt to open spreadsheet
 try:
