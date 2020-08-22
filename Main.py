@@ -679,8 +679,6 @@ def updateOptions():
     rope_color_menu = OptionMenu(ropeTab, colorDrop, *color_options)
     rope_color_menu.grid(row=1, column=3, sticky=NSEW)
 
-
-
 # Attempt to open spreadsheet
 try:
     route_book = openpyxl.load_workbook('Routes.xlsx')
